@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 function AttendanceDashboard() {
   const [attendance, setAttendance] = useState([]);
@@ -13,14 +13,26 @@ function AttendanceDashboard() {
   }, []);
 
   const fetchAttendance = async () => {
+    setLoading(true);
+    setError('');
     try {
-      setLoading(true);
-      setError('');
+      if (!API_BASE_URL) {
+        throw new Error('API URL is not set. Please configure REACT_APP_API_URL in your environment.');
+      }
       const response = await axios.get(`${API_BASE_URL}/attendance`);
-      setAttendance(response.data.data);
-    } catch (error) {
-      console.error('Error fetching attendance:', error);
-      setError('Cannot connect to server. Please make sure the backend is running on port 5000.');
+      setAttendance(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching attendance:', err);
+      if (err.response) {
+        // Server responded with status outside 2xx
+        setError(`Server error: ${err.response.status} - ${err.response.data.message || 'Unknown error'}`);
+      } else if (err.request) {
+        // Request made but no response received
+        setError('Cannot connect to backend. Please make sure the backend is deployed and the URL is correct.');
+      } else {
+        // Other errors
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -51,10 +63,7 @@ function AttendanceDashboard() {
           <span className="badge bg-secondary me-2">
             Total Records: {attendance.length}
           </span>
-          <button 
-            className="btn btn-outline-light btn-sm" 
-            onClick={fetchAttendance}
-          >
+          <button className="btn btn-outline-light btn-sm" onClick={fetchAttendance}>
             Refresh
           </button>
         </div>
@@ -66,11 +75,8 @@ function AttendanceDashboard() {
             {error}
             <hr />
             <div className="d-flex justify-content-between">
-              <small>Please ensure the backend server is running</small>
-              <button 
-                className="btn btn-outline-danger btn-sm" 
-                onClick={fetchAttendance}
-              >
+              <small>Please ensure the backend server is running and accessible from this frontend.</small>
+              <button className="btn btn-outline-danger btn-sm" onClick={fetchAttendance}>
                 Retry
               </button>
             </div>
@@ -100,9 +106,7 @@ function AttendanceDashboard() {
                   <tr key={record.id}>
                     <td>{index + 1}</td>
                     <td className="fw-bold">{record.employeeName}</td>
-                    <td>
-                      <span className="badge bg-info text-dark">{record.employeeID}</span>
-                    </td>
+                    <td><span className="badge bg-info text-dark">{record.employeeID}</span></td>
                     <td>{formatDate(record.date)}</td>
                     <td>
                       {record.status === 'Present' ? (

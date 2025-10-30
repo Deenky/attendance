@@ -9,11 +9,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Dynamic CORS configuration
+// Add all frontend URLs separated by comma in ALLOWED_ORIGINS
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-  credentials: true
+  origin: allowedOrigins,
+  credentials: true,
 }));
+
+// Middleware to parse JSON
 app.use(express.json());
 
 // Routes
@@ -22,9 +26,9 @@ app.use('/api/attendance', attendanceRoutes);
 // Health check endpoint
 app.get('/health', async (req, res) => {
   const dbStatus = await testConnection();
-  res.json({ 
-    success: true, 
-    message: 'Server is running', 
+  res.json({
+    success: true,
+    message: 'Server is running',
     database: dbStatus ? 'Connected to MySQL on Railway' : 'Disconnected',
     timestamp: new Date().toISOString()
   });
@@ -69,6 +73,7 @@ const startServer = async () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
       console.log(`📊 Database: Railway MySQL`);
       console.log(`🔧 Environment: ${process.env.NODE_ENV}`);
+      console.log(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
