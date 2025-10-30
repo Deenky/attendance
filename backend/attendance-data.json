@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "employeeName": "John Smith",
+    "employeeID": "EMP001",
+    "date": "2024-01-15",
+    "status": "Present",
+    "createdAt": "2025-10-30T10:16:00.347Z"
+  },
+  {
+    "id": 2,
+    "employeeName": "Sarah Johnson",
+    "employeeID": "EMP002",
+    "date": "2024-01-15",
+    "status": "Present",
+    "createdAt": "2025-10-30T10:16:00.348Z"
+  },
+  {
+    "id": 3,
+    "employeeName": "Mike Wilson",
+    "employeeID": "EMP003",
+    "date": "2024-01-15",
+    "status": "Absent",
+    "createdAt": "2025-10-30T10:16:00.348Z"
+  },
+  {
+    "id": 4,
+    "employeeName": "likomang qhobosheane",
+    "employeeID": "Emp002",
+    "date": "2025-10-30",
+    "status": "Present",
+    "createdAt": "2025-10-30T10:17:50.330Z"
+  }
+]
